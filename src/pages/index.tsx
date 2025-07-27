@@ -4,7 +4,7 @@ import FileUpload from '../components/FileUpload';
 import LoadingSpinner from '../components/LoadingSpinner';
 import TopicOutline from '../components/TopicOutline';
 import PresentationViewer from '../components/PresentationViewer';
-import '../app/globals.css'; 
+import '../app/globals.css';
 
 // Define interfaces for data structures
 interface Topic {
@@ -17,7 +17,10 @@ interface ExtractedImage {
   id: string;
   filename: string;
   relativePath: string;
-  description: string; // Now includes description from backend
+  // Make description optional or remove if it's not consistently provided by backend initially
+  // Based on your backend, it might not have a description initially.
+  // If it's always there, keep it as mandatory. If not, make it `string | undefined`.
+  description?: string;
 }
 
 interface SlideData {
@@ -35,7 +38,8 @@ interface SlideData {
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3000';
 
 const HomePage: React.FC = () => {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  // Fix for 'selectedFile' unused warning: prefix with underscore
+  const [_selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
 
@@ -50,7 +54,7 @@ const HomePage: React.FC = () => {
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
   const handleFileSelect = async (file: File) => {
-    setSelectedFile(file);
+    setSelectedFile(file); // Keep this line as it sets the state
     setUploading(true);
     setUploadError(null);
     setExtractedTopics([]);
@@ -85,9 +89,14 @@ const HomePage: React.FC = () => {
       console.log('Extracted Images (with descriptions):', data.extractedImages);
       console.log('Upload ID:', data.uploadId);
 
-    } catch (error: any) {
+    } catch (error: unknown) { // Fix: Change 'any' to 'unknown'
       console.error('Upload error:', error);
-      setUploadError(error.message);
+      // Safely access error message
+      if (error instanceof Error) {
+        setUploadError(error.message);
+      } else {
+        setUploadError('An unknown error occurred during upload.');
+      }
     } finally {
       setUploading(false);
     }
@@ -142,9 +151,14 @@ const HomePage: React.FC = () => {
       const data = await response.json();
       setGeneratedSlides(data.slides);
       console.log('Generated Slides:', data.slides);
-    } catch (error: any) {
+    } catch (error: unknown) { // Fix: Change 'any' to 'unknown'
       console.error('Content generation error:', error);
-      setGenerateError(error.message);
+      // Safely access error message
+      if (error instanceof Error) {
+        setGenerateError(error.message);
+      } else {
+        setGenerateError('An unknown error occurred during content generation.');
+      }
     } finally {
       setGenerating(false);
     }
