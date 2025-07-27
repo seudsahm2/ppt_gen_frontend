@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactMarkdown from 'react-markdown';
+import ReactMarkdown, { Components } from 'react-markdown'; // Import 'Components' type
 import rehypeRaw from 'rehype-raw';
 
 interface SlideProps {
@@ -23,18 +23,23 @@ interface TwoColumnTextSlideProps extends SlideProps {
 }
 
 // Custom components to override default Markdown rendering for better styling control
-const MarkdownComponents = {
-  h1: ({ node, ...props }: any) => <h3 className="text-2xl font-bold text-gray-800 mb-4" {...props} />,
-  h2: ({ node, ...props }: any) => <h4 className="text-xl font-semibold text-gray-700 mb-3" {...props} />,
-  h3: ({ node, ...props }: any) => <h5 className="text-lg font-semibold text-gray-600 mb-2" {...props} />,
-  p: ({ node, ...props }: any) => <p className="mb-4 leading-relaxed" {...props} />,
-  ul: ({ node, ...props }: any) => <ul className="list-disc pl-5 mb-4 space-y-2" {...props} />,
-  ol: ({ node, ...props }: any) => <ol className="list-decimal pl-5 mb-4 space-y-2" {...props} />,
-  li: ({ node, ...props }: any) => <li className="text-base text-gray-700" {...props} />,
-  a: ({ node, ...props }: any) => <a className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer" {...props} />,
-  strong: ({ node, ...props }: any) => <strong className="font-bold text-gray-900" {...props} />,
-  em: ({ node, ...props }: any) => <em className="italic text-gray-600" {...props} />,
+// Use the 'Components' type from 'react-markdown' to correctly type the renderers
+const MarkdownComponents: Components = {
+  // Fix: Explicitly type the props for each component
+  // Using an underscore for 'node' tells ESLint it's intentionally unused.
+  h1: ({ node: _node, ...props }) => <h3 className="text-2xl font-bold text-gray-800 mb-4" {...props} />,
+  h2: ({ node: _node, ...props }) => <h4 className="text-xl font-semibold text-gray-700 mb-3" {...props} />,
+  h3: ({ node: _node, ...props }) => <h5 className="text-lg font-semibold text-gray-600 mb-2" {...props} />,
+  p: ({ node: _node, ...props }) => <p className="mb-4 leading-relaxed" {...props} />,
+  ul: ({ node: _node, ...props }) => <ul className="list-disc pl-5 mb-4 space-y-2" {...props} />,
+  ol: ({ node: _node, ...props }) => <ol className="list-decimal pl-5 mb-4 space-y-2" {...props} />,
+  li: ({ node: _node, ...props }) => <li className="text-base text-gray-700" {...props} />,
+  a: ({ node: _node, ...props }) => <a className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer" {...props} />,
+  strong: ({ node: _node, ...props }) => <strong className="font-bold text-gray-900" {...props} />,
+  em: ({ node: _node, ...props }) => <em className="italic text-gray-600" {...props} />,
   // Add more custom components for blockquote, code, etc., if needed
+  // If you need the 'node' for more complex logic (e.g., checking node type or children),
+  // then you'd use it normally and remove the '_' prefix.
 };
 
 // Base Slide Wrapper
